@@ -59,6 +59,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var f6: UILabel!
     @IBOutlet weak var g6: UILabel!
     
+    @IBOutlet weak var turnLabel: UILabel!
     
     var col0 = [UILabel]()
     var col1 = [UILabel]()
@@ -67,6 +68,8 @@ class ViewController: UIViewController {
     var col4 = [UILabel]()
     var col5 = [UILabel]()
     var col6 = [UILabel]()
+    
+    var grid = [[UILabel]]()
     
     var toGo = "red"
     
@@ -81,19 +84,27 @@ class ViewController: UIViewController {
         col4 = [a4, b4, c4, d4, e4, f4, g4]
         col5 = [a5, b5, c5, d5, e5, f5, g5]
         col6 = [a6, b6, c6, d6, e6, f6, g6]
+        grid = [col0, col1, col2, col3, col4, col5, col6]
     }
     
-    func dropToken(col: [UILabel]) {
+    func dropToken(colNum: Int) {
+        var col = grid[colNum]
         var i = 6
         while i >= 0 {
             if col[i].text == "X" {
                 col[i].text = "0"
                 if toGo == "red" {
                     col[i].textColor = UIColor.red
+                    checkForWin(r: i, c: colNum)
                     toGo = "yellow"
+                    turnLabel.text = "Yellow's Turn"
+                    turnLabel.textColor = UIColor.yellow
                 } else if toGo == "yellow" {
                     col[i].textColor = UIColor.yellow
+                    checkForWin(r: i, c: colNum)
                     toGo = "red"
+                    turnLabel.text = "Red's Turn"
+                    turnLabel.textColor = UIColor.red
                 }
                 i = -1
             } else {
@@ -101,33 +112,37 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    func checkForWin(r: Int, c: Int) {
+        
+    }
 
     @IBAction func col0Tapped(_ sender: Any) {
-        dropToken(col: col0)
+        dropToken(colNum: 0)
     }
 
     @IBAction func col1Tapped(_ sender: Any) {
-        dropToken(col: col1)
+        dropToken(colNum: 1)
     }
     
     @IBAction func col2Tapped(_ sender: Any) {
-        dropToken(col: col2)
+        dropToken(colNum: 2)
     }
     
     @IBAction func col3Tapped(_ sender: Any) {
-        dropToken(col: col3)
+        dropToken(colNum: 3)
     }
     
     @IBAction func col4Tapped(_ sender: Any) {
-        dropToken(col: col4)
+        dropToken(colNum: 4)
     }
     
     @IBAction func col6Tapped(_ sender: Any) {
-        dropToken(col: col5)
+        dropToken(colNum: 5)
     }
     
     @IBAction func col7Tapped(_ sender: Any) {
-        dropToken(col: col6)
+        dropToken(colNum: 6)
     }
 }
 
