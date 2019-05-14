@@ -71,8 +71,9 @@ class ViewController: UIViewController {
     
     var grid = [[UILabel]]()
     
-    var toGo = "red"
+    var toGo = "Red"
     
+    var newGame = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,24 +88,45 @@ class ViewController: UIViewController {
         grid = [col0, col1, col2, col3, col4, col5, col6]
     }
     
+    func restart() {
+        var i = 0
+        var j = 0
+        while i <= 6 {
+            j = 0
+            while j <= 6 {
+                grid[i][j].text = "X"
+                grid[i][j].textColor = UIColor.black
+                j += 1
+            }
+            i += 1
+        }
+        newGame = false
+    }
+    
     func dropToken(colNum: Int) {
         var col = grid[colNum]
         var i = 6
         while i >= 0 {
             if col[i].text == "X" {
                 col[i].text = "0"
-                if toGo == "red" {
+                if toGo == "Red" {
                     col[i].textColor = UIColor.red
-                    checkForWin(r: i, c: colNum)
-                    toGo = "yellow"
-                    turnLabel.text = "Yellow's Turn"
-                    turnLabel.textColor = UIColor.yellow
-                } else if toGo == "yellow" {
+                    if !checkForWin(r: i, c: colNum) {
+                        toGo = "Yellow"
+                        turnLabel.text = "Yellow's Turn"
+                    } else {
+                        i = -1
+                        newGame = true
+                    }
+                } else if toGo == "Yellow" {
                     col[i].textColor = UIColor.yellow
-                    checkForWin(r: i, c: colNum)
-                    toGo = "red"
-                    turnLabel.text = "Red's Turn"
-                    turnLabel.textColor = UIColor.red
+                    if !checkForWin(r: i, c: colNum) {
+                        toGo = "Red"
+                        turnLabel.text = "Red's Turn"
+                    } else {
+                        i = -1
+                        newGame = true
+                    }
                 }
                 i = -1
             } else {
@@ -113,35 +135,218 @@ class ViewController: UIViewController {
         }
     }
     
-    func checkForWin(r: Int, c: Int) {
-        
+    func checkForWin(r: Int, c: Int) -> Bool {
+        if checkCol(r: r, c: c) { return true }
+        if checkRow(r: r, c: c) { return true }
+        if checkDiagonals(r: r, c: c) { return true }
+        return false
+    }
+    
+    func checkCol(r: Int, c: Int) -> Bool {
+        var col = grid[c]
+        var line = 1
+        var rowNum = r + 1
+        while rowNum <= 6 {
+            if col[rowNum].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    rowNum = 7
+                }
+            } else if col[rowNum].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    rowNum = 7
+                }
+            }
+            rowNum = rowNum + 1
+        }
+        if (line >= 4) {
+            turnLabel.text = "\(toGo) wins!"
+            return true
+        }
+        return false
+    }
+    
+    
+    func checkRow(r: Int, c: Int) -> Bool {
+        var line = 1
+        var colNum = c + 1
+        while colNum <= 6  {
+            if grid[colNum][r].text != "0" {
+                colNum = 7
+            } else if grid[colNum][r].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            } else if grid[colNum][r].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            }
+            colNum += 1
+        }
+        colNum = c - 1
+        while colNum >= 0  {
+            if grid[colNum][r].text != "0" {
+                colNum = -1
+            } else if grid[colNum][r].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            } else if grid[colNum][r].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            }
+            colNum -= 1
+        }
+        if (line >= 4) {
+            turnLabel.text = "\(toGo) wins!"
+            return true
+        }
+        return false
+    }
+    
+    func checkDiagonals(r: Int, c: Int) -> Bool {
+        var line = 1
+        var colNum = c + 1
+        var rowNum = r + 1
+        while colNum <= 6 && rowNum <= 6 {
+            if grid[colNum][rowNum].text != "0" {
+                colNum = 7
+            } else if grid[colNum][rowNum].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            } else if grid[colNum][rowNum].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            }
+            colNum += 1
+            rowNum += 1
+        }
+        colNum = c - 1
+        rowNum = r - 1
+        while colNum >= 0 && rowNum >= 0 {
+            if grid[colNum][rowNum].text != "0" {
+                colNum = -1
+            } else if grid[colNum][rowNum].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            } else if grid[colNum][rowNum].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            }
+            colNum -= 1
+            rowNum -= 1
+        }
+        if (line >= 4) {
+            turnLabel.text = "\(toGo) wins!"
+            return true
+        }
+        line = 1
+        colNum = c + 1
+        rowNum = r - 1
+        while colNum <= 6 && rowNum >= 0 {
+            if grid[colNum][rowNum].text != "0" {
+                colNum = 7
+            } else if grid[colNum][rowNum].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            } else if grid[colNum][rowNum].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = 7
+                }
+            }
+            colNum += 1
+            rowNum -= 1
+        }
+        colNum = c - 1
+        rowNum = r + 1
+        while colNum >= 0 && rowNum <= 6 {
+            if grid[colNum][rowNum].text != "0" {
+                colNum = -1
+            } else if grid[colNum][rowNum].textColor == UIColor.red {
+                if toGo == "Red" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            } else if grid[colNum][rowNum].textColor == UIColor.yellow {
+                if toGo == "Yellow" {
+                    line += 1
+                } else {
+                    colNum = -1
+                }
+            }
+            colNum -= 1
+            rowNum += 1
+        }
+        if (line >= 4) {
+            turnLabel.text = "\(toGo) wins!"
+            return true
+        }
+        return false
     }
 
     @IBAction func col0Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 0)
     }
 
     @IBAction func col1Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 1)
     }
     
     @IBAction func col2Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 2)
     }
     
     @IBAction func col3Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 3)
     }
     
     @IBAction func col4Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 4)
     }
     
     @IBAction func col6Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 5)
     }
     
     @IBAction func col7Tapped(_ sender: Any) {
+        if newGame { restart() }
         dropToken(colNum: 6)
     }
 }
